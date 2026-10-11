@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  JWGUIEngine for a Visual Studio C++ project (no CMake needed).
+
+  Add it once: View > Property Manager > right-click the project >
+  Add Existing Property Sheet... > this file. It applies to every
+  configuration, and the paths below are relative to this file, so the
+  package can be anywhere.
+
+  It sets what a program must share with the engine (the engine's interface
+  passes C++ standard library types): x64, static runtime /MT in every
+  configuration, _ITERATOR_DEBUG_LEVEL=0, UNICODE, NOMINMAX, /utf-8, C++17;
+  the include folders, JWGUIEngine.lib, the Windows subsystem; and copies
+  JWGUIEngine.dll next to the exe after each build. A setting the project
+  itself overrides is reported as a build error with the place to change it.
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="JWGUIEngine">
+    <JWGUIEngineDir>$(MSBuildThisFileDirectory)</JWGUIEngineDir>
+    <JWGUIEngineInclude>$(JWGUIEngineDir)include</JWGUIEngineInclude>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <!-- Both forms work: #include "UIButton.h" and #include <JWGUIEngine/Controls/UIButton.h>. -->
+      <AdditionalIncludeDirectories>$(JWGUIEngineInclude);$(JWGUIEngineInclude)\JWGUIEngine\Core;$(JWGUIEngineInclude)\JWGUIEngine\Controls;$(JWGUIEngineInclude)\JWGUIEngine\Layout;$(JWGUIEngineInclude)\JWGUIEngine\Scene;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NOMINMAX;UNICODE;_UNICODE;_ITERATOR_DEBUG_LEVEL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <!-- C4251: standard library members of exported classes. Expected with
+           this DLL (same compiler and runtime on both sides); the engine's
+           own build turns it off too. -->
+      <DisableSpecificWarnings>4251;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <LanguageStandard Condition="'%(ClCompile.LanguageStandard)' == '' or '%(ClCompile.LanguageStandard)' == 'Default' or '%(ClCompile.LanguageStandard)' == 'stdcpp14'">stdcpp17</LanguageStandard>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(JWGUIEngineDir)lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>JWGUIEngine.lib;user32.lib;gdi32.lib;shell32.lib;ole32.lib;comdlg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <!-- New Visual Studio projects define _DEBUG in Debug. With the release
+       runtime the engine uses, it would make the standard library expect the
+       debug runtime (LNK2038), so it is taken out before compiling. -->
+  <Target Name="JWGUIEngineDropDebugDefine" BeforeTargets="ClCompile" Condition="'@(ClCompile)' != ''">
+    <ItemGroup>
+      <ClCompile>
+        <!-- Unescape: the string function's result has its ';' escaped, which
+             would make the whole list one definition. -->
+        <PreprocessorDefinitions>$([MSBuild]::Unescape($([System.String]::Copy(';%(ClCompile.PreprocessorDefinitions);').Replace(';_DEBUG;', ';').Trim(';'))))</PreprocessorDefinitions>
+      </ClCompile>
+    </ItemGroup>
+  </Target>
+
+  <!-- Settings a project can override after this sheet: stop with a clear message. -->
+  <Target Name="JWGUIEngineCheck" BeforeTargets="ClCompile" Condition="'@(ClCompile)' != ''">
+    <Error Condition="'$(Platform)' != 'x64'"
+           Text="JWGUIEngine is built for x64. Choose the x64 platform (now: $(Platform))." />
+    <Error Condition="'%(ClCompile.RuntimeLibrary)' != 'MultiThreaded'"
+           Text="JWGUIEngine needs the static release runtime: Project Properties > C/C++ > Code Generation > Runtime Library = Multi-threaded (/MT), in every configuration (%(ClCompile.Identity) uses %(ClCompile.RuntimeLibrary))." />
+  </Target>
+
+  <Target Name="JWGUIEngineCopyDll" AfterTargets="Build">
+    <Copy SourceFiles="$(JWGUIEngineDir)bin\JWGUIEngine.dll" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <!--
+    The project inside the program, encrypted with its package key (the
+    program then ships as its .exe alone):
+      <PropertyGroup><JWGUIProject>$(ProjectDir)myapp.jwui</JWGUIProject></PropertyGroup>
+    or only the key, for a protected .jwpack shipped next to the program:
+      <PropertyGroup><JWGUIKeyFrom>$(ProjectDir)myapp.jwui</JWGUIKeyFrom></PropertyGroup>
+    The same as a Post-Build Event:
+      "$(JWGUIEngineDir)bin\JWGUIPack.exe" project "$(ProjectDir)myapp.jwui" "$(TargetPath)"
+  -->
+  <Target Name="JWGUIEngineEmbedProject" AfterTargets="Build" Condition="'$(JWGUIProject)' != ''">
+    <Exec Command="&quot;$(JWGUIEngineDir)bin\JWGUIPack.exe&quot; project &quot;$(JWGUIProject)&quot; &quot;$(TargetPath)&quot;" />
+  </Target>
+  <Target Name="JWGUIEngineEmbedKey" AfterTargets="Build" Condition="'$(JWGUIProject)' == '' and '$(JWGUIKeyFrom)' != ''">
+    <Exec Command="&quot;$(JWGUIEngineDir)bin\JWGUIPack.exe&quot; key &quot;$(JWGUIKeyFrom)&quot; &quot;$(TargetPath)&quot;" />
+  </Target>
+</Project>

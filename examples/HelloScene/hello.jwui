@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<JWGUI version="1" start="Main">
+  <App title="Hello" theme="Light"/>
+  <Scene id="Main" width="420" height="220">
+    <Window id="Root" layout="Flex" x="0" y="0" width="420" height="220" flexDirection="Column" gap="12" padding="24">
+      <Static id="prompt" text="What is your name?" layout="Absolute" x="0" y="0" width="372" height="24" flexShrink="0"/>
+      <EditBox id="nameEdit" text="" layout="Absolute" x="0" y="0" width="372" height="32" flexShrink="0"/>
+      <Button id="helloButton" text="Say hello" layout="Absolute" x="0" y="0" width="120" height="34" flexShrink="0"/>
+      <Static id="answer" text="" layout="Absolute" x="0" y="0" width="372" height="24" flexShrink="0"/>
+    </Window>
+  </Scene>
+</JWGUI>

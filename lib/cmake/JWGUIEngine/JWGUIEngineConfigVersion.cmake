@@ -1,0 +1,19 @@
+# Version check for find_package(JWGUIEngine <version>). 1.0.2 is filled in
+# by scripts/package.ps1. Same major version and not older is compatible.
+set(PACKAGE_VERSION "1.0.2")
+
+if(PACKAGE_FIND_VERSION_MAJOR AND NOT PACKAGE_FIND_VERSION_MAJOR STREQUAL "1")
+    set(PACKAGE_VERSION_COMPATIBLE FALSE)
+elseif(PACKAGE_VERSION VERSION_LESS PACKAGE_FIND_VERSION)
+    set(PACKAGE_VERSION_COMPATIBLE FALSE)
+else()
+    set(PACKAGE_VERSION_COMPATIBLE TRUE)
+    if(PACKAGE_FIND_VERSION STREQUAL PACKAGE_VERSION)
+        set(PACKAGE_VERSION_EXACT TRUE)
+    endif()
+endif()
+
+if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(PACKAGE_VERSION "${PACKAGE_VERSION} (64-bit)")
+    set(PACKAGE_VERSION_UNSUITABLE TRUE)
+endif()

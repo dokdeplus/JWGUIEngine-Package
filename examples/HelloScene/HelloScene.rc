@@ -1,0 +1,3 @@
+// The program's icon: Explorer shows it, and JWGUI uses the exe's first icon
+// for the window's title bar and taskbar button.
+1 ICON "HelloScene.ico"
