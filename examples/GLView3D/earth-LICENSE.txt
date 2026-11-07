@@ -1,0 +1,13 @@
+earth.jpg
+
+The world map on the globe: Natural Earth II (shaded relief, land cover,
+water), made with Natural Earth. Free vector and raster map data @
+naturalearthdata.com. Natural Earth data is in the public domain:
+https://www.naturalearthdata.com/about/terms-of-use/
+
+The 2048 x 1024 picture was put together from the Natural Earth II tiles
+that ship with CesiumJS (packages/engine/Source/Assets/Textures/NaturalEarthII,
+level 2), which CesiumJS lists as public domain data from Natural Earth.
+
+The globe, its stand and everything else in the example are drawn by the
+example's own code.

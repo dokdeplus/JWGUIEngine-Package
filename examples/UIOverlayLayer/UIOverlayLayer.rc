@@ -1,0 +1,3 @@
+// The program's icon: Explorer shows it, and the game's window uses it
+// (LoadIcon 1).
+1 ICON "UIOverlayLayer.ico"

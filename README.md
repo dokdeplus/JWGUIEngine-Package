@@ -1,15 +1,15 @@
 # JWGUIEngine
 
-**A C++ GUI engine for Windows with a visual editor.** Design your screens in JWGUIEditor, save them as plain files, and let a C++ program load them and add the logic, or run them with no code at all in JWGUIPlayer. Spend your time on your app, not on its GUI.
+**A C++ GUI engine for Windows, Linux and macOS with a visual editor.** Design your screens in JWGUIEditor, save them as plain files, and let a C++ program load them and add the logic, or run them with no code at all in JWGUIPlayer. Spend your time on your app, not on its GUI.
 
-[![Version 1.0.2](https://img.shields.io/badge/version-1.0.2-blue.svg)](#download)
-[![Windows 10 / 11 x64](https://img.shields.io/badge/platform-Windows%2010%20%2F%2011%20x64-lightgrey.svg)](#platforms)
+[![Version 1.0.3](https://img.shields.io/badge/version-1.0.3-blue.svg)](#download)
+[![Windows | Linux | macOS](https://img.shields.io/badge/platform-Windows%20%7C%20Linux%20%7C%20macOS-lightgrey.svg)](#platforms)
 [![C++17](https://img.shields.io/badge/C%2B%2B-17-00599C.svg)](#use-the-engine-from-c)
 [![MIT License](https://img.shields.io/badge/license-MIT-green.svg)](#license)
 
-This repository is the **release package** of JWGUIEngine: the engine (`JWGUIEngine.dll` with headers and a CMake package), the editor, the player, sample apps and games, the user guide in English and Korean, and a ready-to-build example. Download it, unzip it, and it works. Nothing is installed in the system.
+> **New in 1.0.3: Linux and macOS.** The engine, the editor, the player and the samples now run on **Windows, Linux (x64) and macOS (Apple silicon)**, from the same project files and the same C++ code. A screen designed on one system opens and runs on the others, and `find_package(JWGUIEngine)` builds your app on all three. Also new: the **GL View**, a control you draw in with OpenGL, with the engine's own controls over your 3D picture ([see below](#3d-views-and-ui-over-a-game)).
 
-한국어 안내는 [아래](#jwguiengine-한국어)에 있습니다.
+This repository is where JWGUIEngine is **released**. Each [release](https://github.com/dokdeplus/JWGUIEngine-Package/releases/latest) has a package for Windows, Linux and macOS: the engine (a shared library with headers and a CMake package), the editor, the player, sample apps and games, the user guide in English and Korean, and ready-to-build examples. Download the one for your system, unpack it, and it works. Nothing is installed in the system. The repository itself holds this page and the examples' source (`examples/`).
 
 ![JWGUIEditor designing a settings screen](img/editor-overview.png)
 
@@ -28,25 +28,57 @@ Desktop developers lose a lot of time to screens: forms laid out by hand, a cont
 | ![A business form made in the editor](img/showcase-form.png) | ![A dashboard with gauges, charts and indicators](img/dashboard-plant.png) |
 | ![Solitaire, one of the sample games](img/sample-solitaire.png) | ![JWPaint, a sample paint program with layers](img/sample-jwpaint.png) |
 
+## One project, three systems
+
+| | Windows | Linux | macOS |
+|---|---|---|---|
+| System | Windows 10 / 11, x64 | x64, glibc 2.38 or later (Ubuntu 24.04, Debian 13, Fedora 39 or newer) | macOS 11 or later, Apple silicon |
+| Editor, player, samples | `bin\JWGUIEditor.exe`, ... | `bin/JWGUIEditor`, ... | `bin/JWGUIEditor.app`, ... |
+| Your C++ app | MSVC x64 (Visual Studio 2026) | GCC 13 or Clang 17 (libstdc++) | Apple Clang (Xcode command line tools) |
+| Build | CMake 3.20+ or `JWGUIEngine.props` | CMake 3.20+ | CMake 3.20+ |
+| Export from the editor | a Windows program | a Linux program | a `.app` |
+
+- **The same files everywhere.** `.jwui` screens, `.jwss` style sheets, string tables and pictures are the same on every system; nothing is converted.
+- **The same C++.** The engine's interface is the same on all three, so your app's code builds on each with `find_package(JWGUIEngine)` and `jwgui_configure_app`.
+- **Native where it matters.** Each system's own fonts (DirectWrite, fontconfig, Core Text), its input methods for Korean, Japanese and Chinese, its file dialogs and display scaling; on macOS the Command key does what Ctrl does on the others.
+
+## 3D views and UI over a game
+
+![The GLView3D example: a globe drawn with OpenGL in a GL View, with the engine's settings panel over it](img/gl-view-3d.png)
+
+- **GL View (`UIGLView`)** is a control you draw in with OpenGL 3.3: put it in a window like any other control, draw your scene in its handler, and it composites with the rest of the window. For model viewers, an editor's 3D view, simulations and game screens.
+- **`UIOverlayLayer`** draws the engine's controls (buttons, sliders, combo boxes, panels, edit boxes with input methods) over your own OpenGL picture: in a GL View, or in a game that has its own window and loop. The controls get the mouse and the keys first; what they leave is your game's. A replacement for an immediate-mode debug UI, with the same look as the rest of your app.
+- **The `GLView3D` example** puts both together: a desk globe with a mouse camera, a settings panel over the 3D picture, a menu bar and a status bar. It is in every package **ready to run** (`bin\GLView3D.exe`, `bin/GLView3D`, `bin/GLView3D.app`) and as source in `examples/GLView3D`.
+- Windows, Linux and macOS alike.
+
 ## Download
 
-- **Download ZIP** of this repository (the green **Code** button) or `git clone https://github.com/dokdeplus/JWGUIEngine-Package.git`.
-- Unzip to a folder of your choice, for example `C:\JWGUI`. Requirements: Windows 10 or 11, 64-bit. To write C++ apps: Visual Studio 2026 (MSVC x64) and CMake 3.20 or later.
-- Start `bin\JWGUIEditor.exe`, or open the guide: `docs\index.html`.
+Download the package for your system from the [latest release](https://github.com/dokdeplus/JWGUIEngine-Package/releases/latest) (older versions are on the Releases page too):
 
-| Folder | Contents |
+| System | File |
 |---|---|
-| `bin\` | `JWGUIEditor.exe` (the visual editor), `JWGUIPlayer.exe` (runs a project with no code), `JWGUIPack.exe` (puts a project inside your program, encrypted), the sample apps and games, and `JWGUIEngine.dll` |
+| Windows 10 or 11, 64-bit | `Package-Release_<version>_<date>_windows-x64.zip` |
+| Linux x64 (glibc 2.38 or later, for example Ubuntu 24.04) | `Package-Release_<version>_<date>_linux-x64.tar.gz` |
+| macOS 11 or later, Apple silicon | `Package-Release_<version>_<date>_macos-arm64.zip` |
+
+- Unpack it to a folder of your choice, for example `C:\JWGUI`. To write C++ apps on Windows: Visual Studio 2026 (MSVC x64) and CMake 3.20 or later; the `README.md` in the Linux and macOS packages says what those systems need.
+- Start `bin\JWGUIEditor.exe` (Linux `bin/JWGUIEditor`, macOS `bin/JWGUIEditor.app`), or open the guide: `docs\index.html`.
+
+| In the package | Contents |
+|---|---|
+| `bin\` | `JWGUIEditor.exe` (the visual editor), `JWGUIPlayer.exe` (runs a project with no code), `JWGUIPack.exe` (puts a project inside your program, encrypted), the sample apps and games, `GLView3D.exe` (the GLView3D example, ready to run), and `JWGUIEngine.dll` |
 | `include\` | The engine's headers: `JWGUIEngine/Core`, `Controls`, `Layout`, `Scene` |
 | `lib\` | `JWGUIEngine.lib` and `cmake\JWGUIEngine\` for `find_package(JWGUIEngine)` |
 | `docs\` | The user guide: `docs\en\` (English), `docs\ko\` (Korean). Plain HTML, opens from disk, no server |
-| `examples\` | `HelloScene`: a complete C++ app on this package, as a CMake project and as a Visual Studio project |
+| `examples\` | `HelloScene`: a complete C++ app on this package, as a CMake project and as a Visual Studio project; `GLView3D`: a globe in a `UIGLView` with a mouse camera and `UIOverlayLayer` settings over it; `UIOverlayLayer`: the engine's controls over an OpenGL game of your own (Windows). The same examples are in this repository's `examples/` |
 | `JWGUIEngine.props` | The engine for a Visual Studio project without CMake |
 | `LICENSE`, `THIRD_PARTY_NOTICES.txt`, `VERSION.txt` | The terms, the parts written by others, the version |
 
+The Linux and macOS packages have the same folders: `bin/` holds the programs (`.app` bundles on macOS) with `libJWGUIEngine.so` and `libSDL3.so.0` (Linux) or `libJWGUIEngine.dylib` and `libSDL3.0.dylib` (macOS), `lib/` the CMake package, and there is no `JWGUIEngine.props`.
+
 ## Quick start
 
-**1. Design a screen.** Start `bin\JWGUIEditor.exe`. Place controls from the Toolbox, name the ones your code will touch, press **F5** to run the project in JWGUIPlayer, **File > Export** to make a Windows app from it with no code. The guide's *Your first project* takes about ten minutes.
+**1. Design a screen.** Start `bin\JWGUIEditor.exe` (Linux `bin/JWGUIEditor`, macOS `bin/JWGUIEditor.app`). Place controls from the Toolbox, name the ones your code will touch, press **F5** to run the project in JWGUIPlayer, **File > Export** to make an app from it with no code for the system you are on. The guide's *Your first project* takes about ten minutes.
 
 **2. Add the logic in C++.** A program loads the project and connects to its controls by name:
 
@@ -87,21 +119,28 @@ project(Hello LANGUAGES CXX)
 find_package(JWGUIEngine 1.0 REQUIRED)
 add_executable(Hello Main.cpp)
 target_link_libraries(Hello PRIVATE JWGUIEngine::JWGUIEngine)
-jwgui_configure_app(Hello)   # Windows program, /MT runtime, copies JWGUIEngine.dll next to the exe
+jwgui_configure_app(Hello)   # Windows: /MT and JWGUIEngine.dll next to the exe; Linux: the engine next to the program; macOS: a .app
 ```
 
 ```powershell
+# Windows
 cmake -S . -B build -A x64 -DCMAKE_PREFIX_PATH=C:\JWGUI
 cmake --build build --config Release
 ```
 
+```sh
+# Linux and macOS
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=$HOME/JWGUI
+cmake --build build
+```
+
 `examples\HelloScene` is exactly this program, ready to build (also as `HelloScene.vcxproj` for Visual Studio without CMake: add `JWGUIEngine.props` through the Property Manager).
 
-**4. Ship it.** `jwgui_configure_app(Hello PROJECT hello.jwui)` puts the project inside the program, encrypted with the project's key. Ship `Hello.exe` and `JWGUIEngine.dll`; nothing has to be installed, not even the Visual C++ Redistributable.
+**4. Ship it.** `jwgui_configure_app(Hello PROJECT hello.jwui)` puts the project inside the program, encrypted with the project's key. Ship `Hello.exe` and `JWGUIEngine.dll` (no Visual C++ Redistributable needed), the program with `libJWGUIEngine.so` and `libSDL3.so.0` on Linux, or `Hello.app` on macOS; nothing has to be installed.
 
 ## Use the engine from C++
 
-The engine's interface passes C++ standard library types, so a program is built the way the engine was: MSVC for x64, C++17 or later, the static runtime `/MT` in every configuration, `_ITERATOR_DEBUG_LEVEL=0`, `UNICODE`, `NOMINMAX`, `/utf-8`, the Windows subsystem. `find_package(JWGUIEngine)` + `jwgui_configure_app` (CMake) or `JWGUIEngine.props` (Visual Studio) set all of this.
+The engine's interface passes C++ standard library types, so a program is built the way the engine was. On Linux: GCC 13 or Clang 17 with libstdc++, C++17 or later. On macOS: Apple Clang, C++17 or later, the program a `.app`. On Windows: MSVC for x64, C++17 or later, the static runtime `/MT` in every configuration, `_ITERATOR_DEBUG_LEVEL=0`, `UNICODE`, `NOMINMAX`, `/utf-8`, the Windows subsystem. `find_package(JWGUIEngine)` + `jwgui_configure_app` (CMake) or `JWGUIEngine.props` (Visual Studio) set all of this.
 
 Everything a scene can hold can also be made in code: panels with Flex, Grid or absolute layout, every control, menus, message boxes, docking panes, timers, work off the UI thread, file dialogs, saved settings. See the guide's *C++ guide*.
 
@@ -112,12 +151,13 @@ Everything a scene can hold can also be made in code: panels with Flex, Grid or 
 - **Layout:** Absolute with anchors, Flex and Grid, in the editor and in code. Sizes in layout units; per-monitor DPI handled by the engine.
 - **Styles:** Dark and Light themes computed from about thirty theme colors, and a CSS-like style sheet (`.jwss`) with types, classes, names, parts and states on top. Text color and font inherit as in CSS. In the editor, every style of a selected control is edited in the Style tab.
 - **Languages and formats:** string tables (i18next JSON), `@id` texts in scenes, `Tr()` in code, plural forms; dates, times and numbers in the user's regional format or a locale the project fixes.
-- **Shipping:** a project is exported from the editor as a Windows app, or embedded in your `.exe`, always encrypted with the project's package key.
-- **Samples, with source projects inside the package's programs:** JWView (picture viewer), JWNote (text editor), JWFiles (two-pane file manager), JWPaint (paint program with layers); 2048, Minesweeper, Solitaire, Blocks, Alkkagi. Each is a `.jwui` project plus a small C++ program.
+- **3D and games:** the GL View (`UIGLView`) for your own OpenGL drawing in a window, and `UIOverlayLayer` for the engine's controls over a 3D picture or a game of your own; game pads as input.
+- **Shipping:** a project is exported from the editor as an app for Windows, Linux or macOS, or embedded in your program, always encrypted with the project's package key.
+- **Samples, with source projects inside the package's programs:** JWView (picture viewer), JWNote (text editor), JWFiles (two- and three-pane file manager), JWPaint (paint program with layers); 2048, Minesweeper, Solitaire, Blocks, Alkkagi. Each is a `.jwui` project plus a small C++ program. And GLView3D, the 3D example above, ready to run.
 
 ## Documentation
 
-The user guide is in the package (`docs\index.html`; English `docs\en\`, Korean `docs\ko\`), 35 pages: getting started, the editor, every control, concepts (projects and scenes, layout, styling, resources, languages, locale), the C++ guide, the player, file formats, working with AI agents. It is plain HTML and opens from disk.
+The user guide is in the package (`docs\index.html`; English `docs\en\`, Korean `docs\ko\`), 38 pages: getting started (Windows, Linux and macOS), the editor, every control (the GL View too), concepts (projects and scenes, layout, styling, resources, languages, locale), the C++ guide (UI in a game or 3D view too), the player, file formats, working with AI agents. It is plain HTML and opens from disk.
 
 ## For AI agents
 
@@ -134,8 +174,9 @@ The guide's page *Working with AI agents* has the rules for writing a JWGUI proj
 
 | | Status |
 |---|---|
-| **Windows 10 / 11 (x64), C++** | Available: the engine, JWGUIEditor and JWGUIPlayer |
-| Linux | Planned |
+| **Windows 10 / 11 (x64), C++** | Available: the engine, JWGUIEditor, JWGUIPlayer and the samples |
+| **Linux (x64), C++** | **Available since 1.0.3**: the same engine, editor, player and samples (glibc 2.38 or later: Ubuntu 24.04, Debian 13, Fedora 39 or newer) |
+| **macOS 11 or later (Apple silicon), C++** | **Available since 1.0.3**: the same engine, editor, player and samples, as `.app` programs (not notarized yet: open them the first time with right-click > **Open**, or System Settings > Privacy & Security > **Open Anyway**) |
 | C# (.NET) | Planned |
 | Web browser (WebAssembly) | Planned |
 
@@ -147,44 +188,9 @@ JWGUIEngine is released under the **MIT License** (`LICENSE`): use it in your ow
 
 | Version | Date | Notes |
 |---|---|---|
+| 1.0.3 | 2026-11-07 | **Linux (x64) and macOS (Apple silicon)**: the engine, the editor, the player and the samples, as packages of their own with headers and the CMake package (`find_package(JWGUIEngine)` on all three); the editor's Export makes an app for the system it runs on. `ChildProcess` (run another program with its output on pipes) and `JsonValue` / `ParseJson`; game pads (`ReadGamepad`, pads as UI input); `UIGLView` (GL View), a control you draw in with OpenGL 3.3, with the `GLView3D` example (a globe with a mouse camera and settings over it, its source in `examples` and ready to run in `bin`); `UIOverlayLayer` for the engine's UI over a game of your own or a GL view (Windows, Linux, macOS); edit boxes center one line; tab strips shrink and scroll; `EventHandler::AddListener` returns an id for `RemoveListener`. Korean typing shows the first letter at once and text drawing is much faster with many Korean characters. JWFiles grew into a two- and three-pane file manager with archives, a home page and the system's icons. **Rebuild your app** against the 1.0.3 headers (class layouts changed). From this version the packages are the release's files (Windows, Linux, macOS); this repository keeps this page and the examples. |
 | 1.0.2 | 2026-10-11 | Fixes from a review of the view core: a click on a card no longer reaches the control behind it, each window keeps its own focus, a disabled panel disables what is inside it, the default font is the system UI font, Shift + wheel scrolls sideways, scroll bars follow the theme. Clocks and gauges in a running app tick without the mouse (the timer queue was armed before the window existed). In the editor a click on the window selects it, a font picked in the Style tab reaches the controls inside, and the Font row lists the installed families. No style lookups while painting: the charts, gauges, indicators and clocks read cached values. New for custom controls: `RenderContent`, `OnStyleChanged`, `CachedPartColor` / `CachedPartFloat` / `CachedPartString` / `CachedPartBackground`, `StartTimer` / `StopTimer`. |
 | 1.0.1 | 2026-10-10 | The editor starts in English until a language is chosen in View > Language (1.0.0 followed the OS language). |
 | 1.0.0 | 2026-10-10 | First release: the engine, the editor, the player, the samples, the guide in English and Korean. Replaces the 0.1.0 preview. |
 
-Keywords: C++ GUI engine, C++ GUI framework, Windows desktop UI, visual UI editor, WYSIWYG UI designer, Skia, GPU rendering, CSS-like style sheet, Flex and Grid layout, dashboard controls, gauges, charts, i18n, per-monitor DPI, MIT license, alternative to Qt / WPF / MFC for C++ desktop apps, AI-agent-friendly UI framework.
-
----
-
-# JWGUIEngine (한국어)
-
-**비주얼 편집기가 있는 Windows용 C++ GUI 엔진**입니다. 화면은 JWGUIEditor에서 디자인해 평범한 파일로 저장하고, C++ 프로그램이 그것을 불러 로직을 붙이거나 JWGUIPlayer가 코드 없이 실행합니다. GUI를 깎던 시간을 앱을 만드는 데 쓰세요.
-
-이 저장소는 JWGUIEngine의 **릴리스 패키지**입니다. 엔진(`JWGUIEngine.dll`, 헤더, CMake 패키지), 편집기, 플레이어, 샘플 앱과 게임, 영어·한국어 사용자 문서, 바로 빌드되는 예제가 들어 있습니다. 내려받아 압축을 풀면 바로 쓸 수 있고, 시스템에 설치되는 것은 없습니다.
-
-## 시작
-
-- 녹색 **Code** 버튼의 **Download ZIP**으로 내려받거나 `git clone https://github.com/dokdeplus/JWGUIEngine-Package.git`으로 받습니다.
-- 원하는 폴더(예: `C:\JWGUI`)에 풉니다. Windows 10 / 11 64비트가 필요하고, C++ 앱을 쓰려면 Visual Studio 2026(MSVC x64)과 CMake 3.20 이상이 필요합니다.
-- `bin\JWGUIEditor.exe`를 시작하거나 `docs\index.html`을 열어 문서를 읽습니다. 한국어 문서는 `docs\ko\index.html`입니다.
-
-| 폴더 | 내용 |
-|---|---|
-| `bin\` | `JWGUIEditor.exe`(편집기), `JWGUIPlayer.exe`(코드 없이 프로젝트 실행), `JWGUIPack.exe`(프로젝트를 암호화해 프로그램 안에 넣음), 샘플 앱과 게임, `JWGUIEngine.dll` |
-| `include\` | 엔진 헤더 |
-| `lib\` | `JWGUIEngine.lib`와 `find_package(JWGUIEngine)`용 CMake 패키지 |
-| `docs\` | 사용자 문서. `docs\ko\`가 한국어, `docs\en\`이 영어. 서버 없이 디스크에서 열립니다 |
-| `examples\` | `HelloScene`: 이 패키지를 쓰는 C++ 앱(CMake 프로젝트와 Visual Studio 프로젝트) |
-
-## 무엇을 할 수 있나
-
-- **화면은 코딩이 아니라 디자인합니다.** 편집기에서 배치한 창이 디자인한 그대로 실행됩니다. 편집기의 캔버스를 그리는 것이 앱을 실행하는 바로 그 엔진입니다.
-- **화면은 코드가 아니라 파일입니다.** `.jwui`(XML), CSS 비슷한 스타일 시트(`.jwss`), 문자열 표(JSON). 모양과 배치를 바꾸고 앱을 다시 시작하면 됩니다. 빌드가 필요 없습니다.
-- **코드는 컨트롤의 이름으로만 화면과 만납니다.** 디자이너가 화면을 바꿔도 코드는 그대로입니다.
-- **컨트롤 한 번 만들어 모든 프로젝트에서 씁니다.** 직접 만든 컨트롤도 기본 컨트롤처럼 등록해 장면에 놓습니다.
-- **처음부터 다듬어진 모양.** 밝은·어두운 테마, 스타일 시트, 애니메이션, 모니터별 DPI, GPU 또는 CPU 그리기, 한글 입력기.
-- **대시보드 컨트롤:** 계기, 온도계, 램프, 스택 라이트, 7세그먼트 표시, 시계, 막대·원·선 차트. 값은 구역(normal, ok, warn, alarm)에 따라 색이 바뀝니다.
-- **배포:** 편집기의 내보내기로 코드 없는 Windows 앱을 만들거나, 프로젝트를 암호화해 `.exe` 안에 넣습니다. Visual C++ 재배포 패키지도 필요 없습니다.
-
-## 플랫폼과 라이선스
-
-이 릴리스는 Windows 10 / 11(x64)에서 C++로 씁니다. Linux, C#(.NET), 웹은 이후 버전에서 지원할 예정입니다. 라이선스는 MIT이며(`LICENSE`), 이 패키지의 프로그램·엔진 라이브러리·헤더·샘플에 적용됩니다. 엔진의 소스 코드는 공개되어 있지 않습니다. 다른 곳에서 온 부분의 라이선스는 `THIRD_PARTY_NOTICES.txt`에 있습니다.
+Keywords: C++ GUI engine, C++ GUI framework, cross-platform desktop UI, Windows, Linux, macOS, visual UI editor, WYSIWYG UI designer, Skia, GPU rendering, OpenGL view, game UI overlay (ImGui alternative), CSS-like style sheet, Flex and Grid layout, dashboard controls, gauges, charts, i18n, per-monitor DPI, MIT license, alternative to Qt / wxWidgets / WPF / MFC for C++ desktop apps, AI-agent-friendly UI framework.
